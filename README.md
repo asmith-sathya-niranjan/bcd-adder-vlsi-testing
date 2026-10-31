@@ -141,8 +141,9 @@ python3 ../scripts/fault_sim.py ../rtl/bcd_adder.bench ../atalanta/bcd_adder.tes
 
 | Name | GitHub |
 |---|---|
-| [Your Name] | [@your-username](https://github.com/your-username) |
-
+| [Asmitha Sathya Niranjan] | [@Asmitha Sathya Niranjan](https://github.com/your-username) |
+| [A Harika] | [@A Harika](https://github.com/your-username) |
+| [Raaga Mayuri] | [@Raaga Mayuri](https://github.com/your-username) |
 ## License
 
 MIT, see [LICENSE](LICENSE).
