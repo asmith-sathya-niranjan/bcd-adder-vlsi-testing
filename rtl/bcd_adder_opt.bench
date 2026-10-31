@@ -1,0 +1,61 @@
+# bcd_adder_opt
+# BCD adder with the redundant carry logic removed (c2 = cout & (z1 | z2))
+INPUT(a0)
+INPUT(a1)
+INPUT(a2)
+INPUT(a3)
+INPUT(b0)
+INPUT(b1)
+INPUT(b2)
+INPUT(b3)
+INPUT(cin)
+
+OUTPUT(s0)
+OUTPUT(s1)
+OUTPUT(s2)
+OUTPUT(s3)
+OUTPUT(cout)
+
+# ---- stage 1 : Z = A + B + Cin  (4 full adders) ----
+# FA0
+fa0_x = XOR(a0, b0)
+z0    = XOR(fa0_x, cin)
+fa0_c1 = AND(a0, b0)
+fa0_c2 = AND(fa0_x, cin)
+k1    = OR(fa0_c1, fa0_c2)
+# FA1
+fa1_x = XOR(a1, b1)
+z1    = XOR(fa1_x, k1)
+fa1_c1 = AND(a1, b1)
+fa1_c2 = AND(fa1_x, k1)
+k2    = OR(fa1_c1, fa1_c2)
+# FA2
+fa2_x = XOR(a2, b2)
+z2    = XOR(fa2_x, k2)
+fa2_c1 = AND(a2, b2)
+fa2_c2 = AND(fa2_x, k2)
+k3    = OR(fa2_c1, fa2_c2)
+# FA3
+fa3_x = XOR(a3, b3)
+z3    = XOR(fa3_x, k3)
+fa3_c1 = AND(a3, b3)
+fa3_c2 = AND(fa3_x, k3)
+k4    = OR(fa3_c1, fa3_c2)
+
+# ---- stage 2 : cout = K + Z3.Z2 + Z3.Z1 ----
+t1   = AND(z3, z2)
+t2   = AND(z3, z1)
+cout = OR(k4, t1, t2)
+
+# ---- stage 3 : S = Z + 0110 when cout = 1 ----
+s0 = BUFF(z0)
+# HA1 : z1 + cout
+s1  = XOR(z1, cout)
+c1  = AND(z1, cout)
+# bit 2 : z2 + cout + c1  (c2 simplified: c2 = cout & (z1 | z2))
+fa5_x = XOR(z2, cout)
+s2    = XOR(fa5_x, c1)
+o12   = OR(z1, z2)
+c2    = AND(cout, o12)
+# bit 3 : z3 + c2 (carry discarded)
+s3 = XOR(z3, c2)

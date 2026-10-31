@@ -1,0 +1,72 @@
+# ===========================================================
+#  Cadence Modus flow for the BCD adder
+#  Follows the commands in your lab slides.
+#  Run on the LAB machine (Modus is not available on your laptop).
+#  Copy bcd_adder.v to the lab machine first.
+#  Paste the commands ONE AT A TIME and check the log after each.
+#  If a command asks for a work directory, add:  -workdir ./workdir
+# ===========================================================
+
+# ---------- 0. Start Modus ----------
+csh
+source /home/installs/cshrc
+modus
+
+# ---------- 1. Build the gate model ----------
+# bcd_adder.v uses only Verilog primitives (and/or/xor/buf), so no
+# technology library is needed - same as the and/not example in the slides.
+# If Modus cannot pick the top cell on its own, add:  -cell bcd_adder
+build_model -designsource bcd_adder.v
+
+# ---------- 2. Build the test mode ----------
+# The BCD adder is purely combinational (no flip-flops), so there are
+# no scan chains. FULLSCAN simply treats inputs as controllable and
+# outputs as observable.
+build_testmode -testmode FULLSCAN
+
+# ---------- 3. Design-rule check ----------
+verify_test_structures -testmode FULLSCAN
+
+# ---------- 4. Build the stuck-at fault model ----------
+build_faultmodel
+
+# ---------- 5. Baseline ATPG (the FULL experiment) ----------
+create_logic_tests -testmode FULLSCAN -experiment FULL -effort high
+report_fault_statistics -testmode FULLSCAN -experiment FULL
+#   -> write down: number of patterns, test coverage %, total faults
+
+# ---------- 6. Fault list reduction ----------
+# Extract the problem faults (the redundant one in this design is the
+# one Atalanta also finds: fa5_x -> fa5_c2 stuck-at-1)
+report_faults -testmode FULLSCAN -experiment FULL \
+    -faultstatus "untested aborted redundant" \
+    -logfile faults_hard.log
+
+# NOTE: in your slides the 'reduced_faults' experiment comes from a
+# 'prepare_fault_subset' step that is not shown in the material.
+# Ask your lab instructor for its exact options, then run:
+create_logic_tests -testmode FULLSCAN -experiment reduced_faults \
+    -append no -maxpatterns 7
+
+# ---------- 7. Export the patterns ----------
+write_vectors -testmode FULLSCAN -inexperiment FULL -language verilog
+write_vectors -testmode FULLSCAN -inexperiment FULL -language stil
+#   output files appear under testresults/verilog/ and testresults/stil/
+
+# ---------- 8. Coverage-limited run (70 %) ----------
+create_logic_tests -testmode FULLSCAN -experiment C70 -maxcoverage 70.0
+report_fault_statistics -testmode FULLSCAN -experiment C70
+
+# ---------- 9. HS / GP / MP comparison ----------
+# Your slides used 1 / 3 / 5 patterns on a tiny circuit.
+# The BCD adder needs ~14 patterns for full coverage (Atalanta result),
+# so scale the limits. After step 5 you know the FULL pattern count N:
+#   HS = 1,  GP = about N/3,  MP = N     (example below uses N = 14)
+create_logic_tests -testmode FULLSCAN -experiment HS -maxpatterns 1
+create_logic_tests -testmode FULLSCAN -experiment GP -maxpatterns 5
+create_logic_tests -testmode FULLSCAN -experiment MP -maxpatterns 14
+
+report_fault_statistics -testmode FULLSCAN -experiment HS
+report_fault_statistics -testmode FULLSCAN -experiment GP
+report_fault_statistics -testmode FULLSCAN -experiment MP
+#   Fill the table:  Mode | Patterns | Coverage | Time | Efficiency (=Coverage/Time)

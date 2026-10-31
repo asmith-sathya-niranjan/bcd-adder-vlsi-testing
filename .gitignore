@@ -1,0 +1,12 @@
+# simulator outputs
+*.out
+*.vcd
+
+# python
+__pycache__/
+*.pyc
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

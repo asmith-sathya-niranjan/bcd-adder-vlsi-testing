@@ -1,0 +1,6 @@
+VCD info: dumpfile bcd_adder.vcd opened for output.
+--------------------------------------------
+Tests run : 200
+Errors    : 0
+RESULT: PASS - BCD adder is correct
+../tb/tb_bcd_adder.v:44: $finish called at 2000000 (1ps)
