@@ -1,0 +1,12 @@
+============================================================
+ FAULT LIST REDUCTION: ../rtl/bcd_adder.bench
+============================================================
+ circuit: 9 inputs, 5 outputs, 32 gates
+ 0. Full list (all stems + all pins)      :  210
+ 1. After structural equivalence collapse :  139   (-71)
+ 2. After removing redundant faults       :  138   (-1)
+ 3. After functional equivalence collapse :  136   (-2)
+ Total reduction: 210 -> 136  (35.2 % fewer faults)
+ redundant fault: fa5_x->fa5_c2 /1
+ wrote bcd_adder_full.flt, bcd_adder_collapsed.flt, bcd_adder_redundant.txt
+ wrote bcd_adder_fault_list_reduction.png

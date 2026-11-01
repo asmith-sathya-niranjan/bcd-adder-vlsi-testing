@@ -1,0 +1,4 @@
+Atalanta patterns applied : 14
+Mismatches                : 0
+RESULT: PASS - ATPG patterns agree with the Verilog design
+atpg_tb.v:37: $finish called at 140000 (1ps)
